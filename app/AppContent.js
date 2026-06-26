@@ -361,10 +361,19 @@ export default function App() {
       "Are you sure you want to delete this appointment?\n\nIt will be removed from the database and related records updated. This cannot be undone.",
     );
     if (!ok) return;
-    await apiRequest(`/appointments/${appointmentId}/hard`, {
-      method: "DELETE",
-    });
-    await loadDashboard();
+
+    const originalAppointments = [...appointments];
+    setAppointments(appointments.filter((a) => a.id !== appointmentId));
+
+    try {
+      await apiRequest(`/appointments/${appointmentId}/hard`, {
+        method: "DELETE",
+      });
+      loadDashboard();
+    } catch (err) {
+      setAppointments(originalAppointments);
+      setError(`Failed to delete appointment: ${err.message}`);
+    }
   };
 
   const submitAdminCancel = async () => {
@@ -434,13 +443,30 @@ export default function App() {
         "This action cannot be undone.",
     );
     if (!ok) return;
-    await apiRequest(`/providers/${providerId}/hard`, { method: "DELETE" });
-    await loadDashboard();
+
+    const originalProviders = [...providers];
+    setProviders(providers.filter((p) => p.id !== providerId));
+
+    try {
+      await apiRequest(`/providers/${providerId}/hard`, { method: "DELETE" });
+      loadDashboard();
+    } catch (err) {
+      setProviders(originalProviders);
+      setError(`Failed to delete provider: ${err.message}`);
+    }
   };
 
   const deleteSlot = async (slotId) => {
-    await apiRequest(`/slots/${slotId}`, { method: "DELETE" });
-    await loadDashboard();
+    const originalSlots = [...slots];
+    setSlots(slots.filter((s) => s.id !== slotId));
+
+    try {
+      await apiRequest(`/slots/${slotId}`, { method: "DELETE" });
+      loadDashboard();
+    } catch (err) {
+      setSlots(originalSlots);
+      setError(`Failed to delete slot: ${err.message}`);
+    }
   };
 
   const deleteFaq = async (faqId) => {
@@ -448,8 +474,17 @@ export default function App() {
       "Are you sure you want to delete this FAQ?\n\nIt will be removed from the database permanently. This cannot be undone.",
     );
     if (!ok) return;
-    await apiRequest(`/faqs/${faqId}`, { method: "DELETE" });
-    await loadDashboard();
+
+    const originalFaqs = [...faqs];
+    setFaqs(faqs.filter((f) => f.id !== faqId));
+
+    try {
+      await apiRequest(`/faqs/${faqId}`, { method: "DELETE" });
+      loadDashboard();
+    } catch (err) {
+      setFaqs(originalFaqs);
+      setError(`Failed to delete FAQ: ${err.message}`);
+    }
   };
 
   const deleteNotificationLog = async (notificationId) => {
@@ -457,8 +492,17 @@ export default function App() {
       "Delete this notification log entry?\n\nIt will be removed from the database permanently. This cannot be undone.",
     );
     if (!ok) return;
-    await apiRequest(`/notifications/${notificationId}`, { method: "DELETE" });
-    await loadDashboard();
+
+    const originalNotifications = [...notifications];
+    setNotifications(notifications.filter((n) => n.id !== notificationId));
+
+    try {
+      await apiRequest(`/notifications/${notificationId}`, { method: "DELETE" });
+      loadDashboard();
+    } catch (err) {
+      setNotifications(originalNotifications);
+      setError(`Failed to delete notification log: ${err.message}`);
+    }
   };
 
   const normalizeTime = (t) => {

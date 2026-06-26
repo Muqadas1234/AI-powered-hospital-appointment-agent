@@ -18,13 +18,21 @@ export async function GET(req) {
     const providerId = searchParams.get("provider_id");
     const dateFrom = searchParams.get("date_from");
     const dateTo = searchParams.get("date_to");
+    const limit = parseInt(searchParams.get("limit") || "300", 10);
+    const offset = parseInt(searchParams.get("offset") || "0", 10);
 
     const where = {};
     if (providerId) where.provider_id = parseInt(providerId, 10);
+    
     if (dateFrom || dateTo) {
       where.date = {};
       if (dateFrom) where.date.gte = new Date(dateFrom + "T00:00:00Z");
       if (dateTo) where.date.lte = new Date(dateTo + "T23:59:59Z");
+    } else {
+      // By default, only query upcoming slots to keep it fast
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      where.date = { gte: today };
     }
 
     const slots = await prisma.slot.findMany({
@@ -33,6 +41,8 @@ export async function GET(req) {
         { date: "asc" },
         { time: "asc" },
       ],
+      take: limit,
+      skip: offset,
     });
 
     const result = slots.map((s) => ({
