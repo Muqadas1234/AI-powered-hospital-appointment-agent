@@ -39,3 +39,6 @@ Thumbs.db
 
 # Local tooling
 .cursor_tmp_*.py
+
+# Next.js build cache
+.next/

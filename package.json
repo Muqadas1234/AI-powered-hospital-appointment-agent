@@ -1,0 +1,27 @@
+{
+  "name": "ai-powered-hospital-appointment-agent",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.15.0",
+    "@vapi-ai/web": "^2.3.9",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "googleapis": "latest",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "twilio": "^5.1.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.15.0"
+  }
+}

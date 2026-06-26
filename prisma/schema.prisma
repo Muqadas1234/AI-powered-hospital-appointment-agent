@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(120)
+  phone        String?       @db.VarChar(30)
+  appointments Appointment[]
+
+  @@map("users")
+}
+
+model Provider {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(120)
+  service      String        @db.VarChar(80)
+  fee_pkr      Int?
+  is_active    Boolean       @default(true)
+  created_by   String?       @db.VarChar(120)
+  slots        Slot[]
+  appointments Appointment[]
+
+  @@map("providers")
+}
+
+model Slot {
+  id          Int       @id @default(autoincrement())
+  provider_id Int
+  date        DateTime  @db.Date
+  time        DateTime  @db.Time
+  end_time    DateTime? @db.Time
+  is_booked   Boolean   @default(false)
+  created_by  String?   @db.VarChar(120)
+  provider    Provider  @relation(fields: [provider_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider_id, date, time], map: "uq_provider_slot_time")
+  @@map("slots")
+}
+
+model Appointment {
+  id                         Int               @id @default(autoincrement())
+  request_id                 String?           @unique @db.VarChar(120)
+  user_id                    Int
+  provider_id                Int
+  date                       DateTime          @db.Date
+  time                       DateTime          @db.Time
+  status                     String            @default("confirmed") @db.VarChar(30)
+  google_calendar_event_id   String?           @db.VarChar(255)
+  cancelled_by               String?           @db.VarChar(120)
+  cancelled_via              String?           @db.VarChar(40)
+  cancellation_reason        String?           @db.VarChar(255)
+  reminder_sent_at           DateTime?         @db.Timestamptz
+  reminder_call_sent_at      DateTime?         @db.Timestamptz
+  reminder_action_token_hash String?           @db.VarChar(128)
+  reminder_action_expires_at DateTime?         @db.Timestamptz
+  reminder_action_used_at    DateTime?         @db.Timestamptz
+  patient_response           String?           @db.VarChar(30)
+  patient_responded_at       DateTime?         @db.Timestamptz
+  created_at                 DateTime          @default(now()) @db.Timestamptz
+  updated_at                 DateTime          @default(now()) @updatedAt @db.Timestamptz
+  user                       User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  provider                   Provider          @relation(fields: [provider_id], references: [id], onDelete: Cascade)
+  notification_logs          NotificationLog[]
+
+  @@map("appointments")
+}
+
+model Faq {
+  id         Int      @id @default(autoincrement())
+  question   String   @unique @db.VarChar(300)
+  answer     String   @db.VarChar(1000)
+  is_active  Boolean  @default(true)
+  created_by String?  @db.VarChar(120)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz
+
+  @@map("faqs")
+}
+
+model AdminUser {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique @db.VarChar(120)
+  password_hash String   @db.VarChar(255)
+  role          String   @default("staff") @db.VarChar(30)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now()) @db.Timestamptz
+
+  @@map("admin_users")
+}
+
+model NotificationLog {
+  id             Int         @id @default(autoincrement())
+  appointment_id Int
+  channel        String      @db.VarChar(30)
+  recipient      String      @db.VarChar(255)
+  message        String      @db.VarChar(1000)
+  status         String      @default("sent") @db.VarChar(30)
+  error          String?     @db.VarChar(500)
+  event_type     String?     @db.VarChar(30)
+  created_at     DateTime    @default(now()) @db.Timestamptz
+  appointment    Appointment @relation(fields: [appointment_id], references: [id], onDelete: Cascade)
+
+  @@map("notification_logs")
+}
