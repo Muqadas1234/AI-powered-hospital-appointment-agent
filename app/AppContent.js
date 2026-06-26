@@ -87,6 +87,8 @@ export default function App() {
     "Emergency — doctor unavailable. You may book another time through our assistant helpline.",
   );
   const [visibleDoctors, setVisibleDoctors] = useState(12);
+  const [selectedService, setSelectedService] = useState("all");
+
 
 
   const endpoint = useMemo(() => `${apiBase}/api/v1/admin`, [apiBase]);
