@@ -124,43 +124,6 @@
     }
   },
   {
-    "name": "check_calendar",
-    "description": "Check if user already has booking conflict.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/check_calendar",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
-    },
-    "body": {
-      "user_phone": "{{user_phone}}",
-      "date": "{{date}}",
-      "time": "{{time}}"
-    },
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "user_phone": {
-          "type": "string"
-        },
-        "date": {
-          "type": "string",
-          "description": "YYYY-MM-DD"
-        },
-        "time": {
-          "type": "string",
-          "description": "HH:MM:SS"
-        }
-      },
-      "required": [
-        "user_phone",
-        "date",
-        "time"
-      ]
-    }
-  },
-  {
     "name": "book_appointment",
     "description": "Book the final appointment after user confirmation.",
     "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/book_appointment",
