@@ -26,18 +26,7 @@ async function handleGetSlots(providerId) {
     spoken_time_range: s.end_time ? `${formatTimeAmPm(s.time)} to ${formatTimeAmPm(s.end_time)}` : formatTimeAmPm(s.time),
     is_booked: s.is_booked,
   }));
-  let clientEmail = "unknown";
-  try {
-    if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-      clientEmail = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON).client_email;
-    }
-  } catch (e) {}
-
-  return jsonResponse({
-    client_email: clientEmail,
-    is_available: true,
-    options: result,
-  });
+  return jsonResponse(result);
 }
 
 export async function GET(req) {
