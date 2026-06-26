@@ -666,7 +666,7 @@ export default function App() {
               <a href="#home" className="site-nav-link active">Home</a>
               <a href="#services" className="site-nav-link">Service</a>
               <a href="#doctors" className="site-nav-link">Doctors</a>
-              <a href="#faqs" className="site-nav-link">Pricing</a>
+              <a href="#how-it-works" className="site-nav-link">How it Works</a>
               <a href="#" className="site-nav-link" onClick={(e) => { e.preventDefault(); setPanel("admin"); }}>Staff Admin</a>
               <button type="button" className="nav-action-btn" onClick={startCall} disabled={isCalling}>
                 {isCalling ? "CALLING..." : "CALL TO BOOK"}
@@ -728,6 +728,17 @@ export default function App() {
                   <p className="hero-sub-text">
                     Skip the queue and talk directly to our intelligent voice receptionist. Schedule checks, inquire about services, or reschedule your slot with ease.
                   </p>
+                  <button
+                    type="button"
+                    className="btn-voice-primary hero-call-btn"
+                    onClick={startCall}
+                    disabled={isCalling}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    {isCalling ? "Call in progress…" : "Call to Book"}
+                  </button>
                   <div className="hero-badges-row">
                     <div className="hero-badge-item">
                       <span className="hero-badge-dot"></span>
@@ -741,26 +752,6 @@ export default function App() {
                       <span className="hero-badge-dot"></span>
                       <span className="hero-badge-text">SMS & WhatsApp Alerts</span>
                     </div>
-                  </div>
-                </div>
-                <div className="hero-art-container">
-                  <div className="landing-call-card">
-                    <div className="call-card-logo-wrap">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M6.62 10.79a15.06 15.06 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.31.56 3.55.56a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.85 21 3 13.15 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.19 2.43.56 3.55a1 1 0 0 1-.24 1.02l-2.2 2.22Z"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="call-card-title">Voice Booking</h3>
-                    <p className="call-card-desc">Click below to start an interactive call with our digital receptionist to handle your appointment.</p>
-                    <button type="button" className="btn-voice-primary" onClick={startCall} disabled={isCalling} style={{ width: "100%" }}>
-                      {isCalling ? "Call in progress…" : "Start Voice Call"}
-                    </button>
                   </div>
                 </div>
               </section>
@@ -937,7 +928,108 @@ export default function App() {
                 )}
               </section>
 
+              {/* How It Works Section */}
+              <section id="how-it-works" className="timeline-section">
+                <div className="section-title-wrap" style={{ marginBottom: "60px" }}>
+                  <h2 className="section-main-title" style={{ fontSize: "2.5rem" }}>
+                    How It <span className="gradient-text">Works</span>
+                  </h2>
+                </div>
+                
+                <div className="timeline-container">
+                  {/* Step 1 */}
+                  <div className="timeline-step">
+                    <div className="timeline-left">
+                      <div className="timeline-number">01</div>
+                      <div className="timeline-line"></div>
+                    </div>
+                    <div className="timeline-middle">
+                      <h3 className="timeline-title">Call to Book</h3>
+                      <p className="timeline-desc">
+                        Click "Call to Book" to start an interactive voice call. The AI will ask for:
+                        <br/><br/>
+                        • Full Name &amp; Phone Number<br/>
+                        • Preferred Doctor or Department<br/>
+                        • Desired Date &amp; Time
+                      </p>
+                    </div>
+                    <div className="timeline-right">
+                      <div className="timeline-image-box">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                      </div>
+                    </div>
+                  </div>
 
+                  {/* Step 2 */}
+                  <div className="timeline-step">
+                    <div className="timeline-left">
+                      <div className="timeline-number">02</div>
+                      <div className="timeline-line"></div>
+                    </div>
+                    <div className="timeline-middle">
+                      <h3 className="timeline-title">Reschedule Easily</h3>
+                      <p className="timeline-desc">
+                        Plans changed? Call the AI again to reschedule. It will ask for:
+                        <br/><br/>
+                        • Your Phone Number<br/>
+                        • Current appointment details<br/>
+                        • New preferred date and time
+                      </p>
+                    </div>
+                    <div className="timeline-right">
+                      <div className="timeline-image-box">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="timeline-step">
+                    <div className="timeline-left">
+                      <div className="timeline-number">03</div>
+                      <div className="timeline-line"></div>
+                    </div>
+                    <div className="timeline-middle">
+                      <h3 className="timeline-title">Free Cancellation</h3>
+                      <p className="timeline-desc">
+                        If you can't make it, just let the AI know. The AI will:
+                        <br/><br/>
+                        • Securely cancel your booking<br/>
+                        • Open the slot for others<br/>
+                        • Send a cancellation SMS
+                      </p>
+                    </div>
+                    <div className="timeline-right">
+                      <div className="timeline-image-box">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="timeline-step">
+                    <div className="timeline-left">
+                      <div className="timeline-number">04</div>
+                      <div className="timeline-line" style={{ display: "none" }}></div>
+                    </div>
+                    <div className="timeline-middle">
+                      <h3 className="timeline-title">Instant Automation</h3>
+                      <p className="timeline-desc">
+                        Our system works instantly in the background to provide:
+                        <br/><br/>
+                        • Live doctor availability checks<br/>
+                        • Instant booking confirmation<br/>
+                        • SMS &amp; WhatsApp reminders
+                      </p>
+                    </div>
+                    <div className="timeline-right">
+                      <div className="timeline-image-box">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
 
               {/* FAQs Section */}
               <section id="faqs" className="faqs-landing-section">
