@@ -67,6 +67,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [providers, setProviders] = useState([]);
+  const [publicProviders, setPublicProviders] = useState([]);
   const [slots, setSlots] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [faqs, setFaqs] = useState([]);
@@ -88,6 +89,8 @@ export default function App() {
   );
   const [visibleDoctors, setVisibleDoctors] = useState(12);
   const [selectedService, setSelectedService] = useState("all");
+  const [serviceCarouselIndex, setServiceCarouselIndex] = useState(0);
+  const [doctorCarouselIndex, setDoctorCarouselIndex] = useState(0);
 
 
 
@@ -130,6 +133,25 @@ export default function App() {
     return response.json();
   };
 
+  const loadPublicData = async () => {
+    try {
+      const [pubProviders, pubFaqs] = await Promise.all([
+        fetch(`${apiBase}/api/v1/public/providers`).then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch public providers");
+          return res.json();
+        }),
+        fetch(`${apiBase}/api/v1/public/faqs`).then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch public FAQs");
+          return res.json();
+        }),
+      ]);
+      setPublicProviders(pubProviders || []);
+      setFaqs(pubFaqs || []);
+    } catch (err) {
+      console.error("Public data load failed:", err.message);
+    }
+  };
+
   const loadDashboard = async () => {
     setLoading(true);
     try {
@@ -145,29 +167,12 @@ export default function App() {
       setAppointments((appointmentRows && appointmentRows.items) || []);
       setFaqs(faqRows || []);
       setNotifications((notificationRows && notificationRows.items) || []);
+      // Also refresh public providers so homepage shows latest availability
+      loadPublicData();
     } catch (err) {
       setError(`Admin load failed: ${err.message}`);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadPublicData = async () => {
-    try {
-      const [pubProviders, pubFaqs] = await Promise.all([
-        fetch(`${apiBase}/api/v1/public/providers`).then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch public providers");
-          return res.json();
-        }),
-        fetch(`${apiBase}/api/v1/public/faqs`).then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch public FAQs");
-          return res.json();
-        }),
-      ]);
-      setProviders(pubProviders || []);
-      setFaqs(pubFaqs || []);
-    } catch (err) {
-      console.error("Public data load failed:", err.message);
     }
   };
 
@@ -608,17 +613,27 @@ export default function App() {
     return { totalAppointments, confirmed, cancelled, pendingResponses, failedNotifications };
   }, [appointments, notifications]);
 
+  // Derive unique service categories dynamically from public providers (includes slot counts)
+  const uniqueServices = useMemo(() => {
+    const serviceMap = new Map();
+    publicProviders.forEach((doc) => {
+      const raw = (doc.service || "").trim();
+      if (raw) {
+        const key = raw.toLowerCase();
+        if (!serviceMap.has(key)) serviceMap.set(key, raw);
+      }
+    });
+    return Array.from(serviceMap.entries()).map(([key, label]) => ({ key, label }));
+  }, [publicProviders]);
+
   const filteredDoctors = useMemo(() => {
-    return providers.filter((doc) => {
+    const sk = selectedService.trim().toLowerCase();
+    if (sk === "all") return publicProviders;
+    return publicProviders.filter((doc) => {
       const ds = (doc.service || "").trim().toLowerCase();
-      const sk = selectedService.trim().toLowerCase();
-      if (sk === "all") return true;
-      if (sk === "general") return ds === "general" || ds === "medicine opd";
-      if (sk === "dentist") return ds === "dentist" || ds === "dentistry";
-      if (sk === "dermatologist") return ds === "dermatologist" || ds === "dermatology";
       return ds === sk;
     });
-  }, [providers, selectedService]);
+  }, [publicProviders, selectedService]);
 
   const isAdminModulePage = panel === "admin" && adminUnlocked && adminPage !== "home";
 
@@ -648,12 +663,13 @@ export default function App() {
               <span>{APP_NAME}</span>
             </a>
             <nav className="site-nav">
-              <a href="#home" className="site-nav-link">Home</a>
-              <a href="#services" className="site-nav-link">Services</a>
+              <a href="#home" className="site-nav-link active">Home</a>
+              <a href="#services" className="site-nav-link">Service</a>
               <a href="#doctors" className="site-nav-link">Doctors</a>
-              <a href="#faqs" className="site-nav-link">FAQs</a>
-              <button type="button" className="btn-secondary" onClick={() => setPanel("admin")} style={{padding: "6px 12px", fontSize: "0.85rem", borderRadius: "8px"}}>
-                Staff Admin
+              <a href="#faqs" className="site-nav-link">Pricing</a>
+              <a href="#" className="site-nav-link" onClick={(e) => { e.preventDefault(); setPanel("admin"); }}>Staff Admin</a>
+              <button type="button" className="nav-action-btn" onClick={startCall} disabled={isCalling}>
+                {isCalling ? "CALLING..." : "CALL TO BOOK"}
               </button>
             </nav>
           </div>
@@ -755,38 +771,75 @@ export default function App() {
                   <span className="section-kicker">Specialized Care</span>
                   <h2 className="section-main-title">Clinical Services</h2>
                 </div>
-                <div className="services-grid">
-                  <div className="service-landing-card" onClick={() => { setSelectedService("general"); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
-                    <div className="service-icon-box">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 10.5V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9.5M3 10h18M12 3v7m-4-7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    </div>
-                    <h3 className="service-card-title">Medicine OPD</h3>
-                    <p className="service-card-desc">General checkups, diagnosis of chronic illnesses, prescriptions, and health advice from experienced physicians.</p>
-                    <span className="service-card-price">Consultation Fee: PKR 1,500</span>
+                
+                <div className="carousel-wrapper" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", maxWidth: "900px", margin: "0 auto" }}>
+                  <button 
+                    className="carousel-nav-btn" 
+                    onClick={() => setServiceCarouselIndex((prev) => Math.max(0, prev - 2))}
+                    disabled={serviceCarouselIndex === 0}
+                    style={{ opacity: serviceCarouselIndex === 0 ? 0.5 : 1 }}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  </button>
+
+                  <div className="services-grid" style={{ flex: 1, marginBottom: 0 }}>
+                    {uniqueServices.slice(serviceCarouselIndex, serviceCarouselIndex + 2).map((svc) => {
+                    const serviceIcons = {
+                      general: <><path d="M19 10.5V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9.5M3 10h18M12 3v7m-4-7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></>,
+                      "medicine opd": <><path d="M19 10.5V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9.5M3 10h18M12 3v7m-4-7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></>,
+                      dentist: <><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2"/></>,
+                      dentistry: <><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2"/></>,
+                      dermatologist: <><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/></>,
+                      dermatology: <><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/></>,
+                      cardiology: <><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></>,
+                      pediatrics: <><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4zM5 20v-1a7 7 0 0 1 14 0v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></>,
+                      orthopedics: <><path d="M8 2v4l-3 3v4l3 3v4M16 2v4l3 3v4l-3 3v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></>,
+                      neurology: <><path d="M12 2a8 8 0 0 1 8 8c0 3-1.5 5-3 6.5S14 19 14 22h-4c0-3-1.5-4.5-3-6.5S4 13 4 10a8 8 0 0 1 8-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 2v5M9 9l3-2 3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></>,
+                      ent: <><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></>,
+                      gynecology: <><circle cx="12" cy="8" r="5" stroke="currentColor" strokeWidth="2"/><path d="M12 13v9M9 18h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></>,
+                      ophthalmology: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/></>,
+                    };
+                    const serviceDescs = {
+                      general: "General checkups, diagnosis of chronic illnesses, prescriptions, and health advice from experienced physicians.",
+                      "medicine opd": "General checkups, diagnosis of chronic illnesses, prescriptions, and health advice from experienced physicians.",
+                      dentist: "Root canal therapy, extractions, whitening, scaling, cavity fillings, and comprehensive oral health assessments.",
+                      dentistry: "Root canal therapy, extractions, whitening, scaling, cavity fillings, and comprehensive oral health assessments.",
+                      dermatologist: "Expert diagnosis for acne, eczema, hair loss, skin infections, pigmentation, and specialized cosmetic skin care.",
+                      dermatology: "Expert diagnosis for acne, eczema, hair loss, skin infections, pigmentation, and specialized cosmetic skin care.",
+                      cardiology: "Heart health screenings, ECGs, blood pressure management, and treatment plans for cardiovascular conditions.",
+                      pediatrics: "Comprehensive child healthcare including vaccinations, growth monitoring, and treatment of childhood illnesses.",
+                      orthopedics: "Bone and joint care including fracture treatment, sports injuries, arthritis management, and physical therapy.",
+                      neurology: "Diagnosis and treatment of nervous system disorders including migraines, epilepsy, and neurological assessments.",
+                      ent: "Ear, Nose, and Throat care including hearing tests, sinus treatment, tonsil issues, and allergy management.",
+                      gynecology: "Women's health services including prenatal care, reproductive health, screenings, and specialized treatments.",
+                      ophthalmology: "Comprehensive eye exams, vision correction, glaucoma screening, cataract evaluation, and eye care treatments.",
+                    };
+                    const docs = publicProviders.filter(d => (d.service || "").trim().toLowerCase() === svc.key);
+                    const avgFee = docs.length > 0 ? Math.round(docs.reduce((s,d) => s + (d.fee_pkr || 0), 0) / docs.length) : null;
+                    const icon = serviceIcons[svc.key] || <><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2"/></>;
+                    const desc = serviceDescs[svc.key] || `Expert medical care from our specialized ${svc.label} department. Book an appointment with our experienced doctors.`;
+                    return (
+                      <div key={svc.key} className="service-landing-card" onClick={() => { setSelectedService(svc.key); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
+                        <div className="service-icon-box">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">{icon}</svg>
+                        </div>
+                        <h3 className="service-card-title">{svc.label}</h3>
+                        <p className="service-card-desc">{desc}</p>
+                        <span className="service-card-price">{avgFee ? `Avg. Fee: PKR ${avgFee.toLocaleString()}` : "Fee varies"}</span>
+                        <span className="service-card-count">{docs.length} Doctor{docs.length !== 1 ? "s" : ""}</span>
+                      </div>
+                    );
+                  })}
                   </div>
-                  <div className="service-landing-card" onClick={() => { setSelectedService("dentist"); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
-                    <div className="service-icon-box">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2"/>
-                      </svg>
-                    </div>
-                    <h3 className="service-card-title">Dentistry</h3>
-                    <p className="service-card-desc">Root canal therapy, extractions, whitening, scaling, cavity fillings, and comprehensive oral health assessments.</p>
-                    <span className="service-card-price">Consultation Fee: PKR 2,500</span>
-                  </div>
-                  <div className="service-landing-card" onClick={() => { setSelectedService("dermatologist"); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
-                    <div className="service-icon-box">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
-                      </svg>
-                    </div>
-                    <h3 className="service-card-title">Dermatology</h3>
-                    <p className="service-card-desc">Expert diagnosis for acne, eczema, hair loss, skin infections, pigmentation, and specialized cosmetic skin care.</p>
-                    <span className="service-card-price">Consultation Fee: PKR 3,000</span>
-                  </div>
+
+                  <button 
+                    className="carousel-nav-btn" 
+                    onClick={() => setServiceCarouselIndex((prev) => Math.min(uniqueServices.length - 2, prev + 2))}
+                    disabled={serviceCarouselIndex >= uniqueServices.length - 2}
+                    style={{ opacity: serviceCarouselIndex >= uniqueServices.length - 2 ? 0.5 : 1 }}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </button>
                 </div>
               </section>
 
@@ -798,44 +851,88 @@ export default function App() {
                 </div>
 
                 <div className="filter-tabs">
-                  <button type="button" className={`filter-tab ${selectedService === "all" ? "active" : ""}`} onClick={() => setSelectedService("all")}>All Doctors</button>
-                  <button type="button" className={`filter-tab ${selectedService === "general" ? "active" : ""}`} onClick={() => setSelectedService("general")}>Medicine OPD</button>
-                  <button type="button" className={`filter-tab ${selectedService === "dentist" ? "active" : ""}`} onClick={() => setSelectedService("dentist")}>Dentistry</button>
-                  <button type="button" className={`filter-tab ${selectedService === "dermatologist" ? "active" : ""}`} onClick={() => setSelectedService("dermatologist")}>Dermatology</button>
+                  <button type="button" className={`filter-tab ${selectedService === "all" ? "active" : ""}`} onClick={() => { setSelectedService("all"); setDoctorCarouselIndex(0); }}>All Doctors</button>
+                  {uniqueServices.map((svc) => (
+                    <button key={svc.key} type="button" className={`filter-tab ${selectedService === svc.key ? "active" : ""}`} onClick={() => { setSelectedService(svc.key); setDoctorCarouselIndex(0); }}>{svc.label}</button>
+                  ))}
                 </div>
 
-                <div className="docs-grid">
-                  {filteredDoctors.length > 0 ? (
-                    filteredDoctors.slice(0, visibleDoctors).map((doc) => (
-                      <div key={doc.id} className="doc-landing-card">
-                        <div className="doc-avatar-box">
-                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                        <h3 className="doc-name">{doc.name}</h3>
-                        <p className="doc-specialty" style={{ textTransform: "capitalize" }}>{doc.service}</p>
-                        <p className="doc-fee">{doc.fee_pkr ? `PKR ${doc.fee_pkr}` : "Consultation fee varies"}</p>
-                        {doc.available_slots_count > 0 ? (
-                          <span className="doc-status-badge doc-status-badge--active">
-                            Available ({doc.available_slots_count} slots)
-                          </span>
-                        ) : (
-                          <span className="doc-status-badge doc-status-badge--inactive">
-                            Fully Booked
-                          </span>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <p style={{ textAlign: "center", gridColumn: "1 / -1", color: "var(--text-soft)" }}>No doctors configured for the selected service currently. Switch to admin to add doctors.</p>
-                  )}
-                </div>
-                {filteredDoctors.length > visibleDoctors && (
-                  <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
-                    <button type="button" className="btn-secondary" onClick={() => setVisibleDoctors((prev) => prev + 12)}>
-                      See More
+                {filteredDoctors.length > 0 ? (
+                  <div className="doctor-carousel-wrapper">
+                    <button
+                      className="carousel-nav-btn"
+                      onClick={() => setDoctorCarouselIndex((prev) => Math.max(0, prev - 4))}
+                      disabled={doctorCarouselIndex === 0}
+                      style={{ opacity: doctorCarouselIndex === 0 ? 0.35 : 1 }}
+                    >
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
+
+                    <div className="docs-carousel-track">
+                      {filteredDoctors.slice(doctorCarouselIndex, doctorCarouselIndex + 4).map((doc) => (
+                        <div key={doc.id} className="doc-landing-card">
+                          <div className="doc-avatar-wrap">
+                            <div className="doc-avatar-box">
+                              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                            {doc.available_slots_count > 0 && (
+                              <span className="doc-online-dot" title="Available" />
+                            )}
+                          </div>
+                          <h3 className="doc-name">{doc.name}</h3>
+                          <p className="doc-specialty">{doc.service}</p>
+                          <div className="doc-fee-row">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            <span>{doc.fee_pkr ? `PKR ${doc.fee_pkr.toLocaleString()}` : "Fee varies"}</span>
+                          </div>
+                          {doc.available_slots_count > 0 ? (
+                            <span className="doc-status-badge doc-status-badge--active">
+                              ✦ Available · {doc.available_slots_count} slots
+                            </span>
+                          ) : (
+                            <span className="doc-status-badge doc-status-badge--inactive">
+                              Fully Booked
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      className="carousel-nav-btn"
+                      onClick={() => setDoctorCarouselIndex((prev) => Math.min(filteredDoctors.length - 4, prev + 4))}
+                      disabled={doctorCarouselIndex + 4 >= filteredDoctors.length}
+                      style={{ opacity: doctorCarouselIndex + 4 >= filteredDoctors.length ? 0.35 : 1 }}
+                    >
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  </div>
+                ) : (
+                  <p style={{ textAlign: "center", color: "var(--text-soft)", padding: "40px 0" }}>No doctors found for the selected service.</p>
+                )}
+
+                {/* Pagination dots */}
+                {filteredDoctors.length > 4 && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "24px" }}>
+                    {Array.from({ length: Math.ceil(filteredDoctors.length / 4) }).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setDoctorCarouselIndex(i * 4)}
+                        style={{
+                          width: doctorCarouselIndex / 4 === i ? "28px" : "8px",
+                          height: "8px",
+                          borderRadius: "999px",
+                          background: doctorCarouselIndex / 4 === i ? "var(--brand-600)" : "var(--line)",
+                          border: "none",
+                          padding: 0,
+                          cursor: "pointer",
+                          transition: "all 0.3s ease",
+                          boxShadow: "none",
+                        }}
+                      />
+                    ))}
                   </div>
                 )}
               </section>
