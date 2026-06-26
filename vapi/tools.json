@@ -2,12 +2,12 @@
   {
     "name": "get_faq_answer",
     "description": "Get answer for business FAQ questions.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/get_faq_answer",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/get_faq_answer",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "question": "{{question}}"
@@ -28,12 +28,12 @@
   {
     "name": "get_providers",
     "description": "Fetch providers by service type.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/get_providers",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/get_providers",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "service": "{{service}}"
@@ -54,12 +54,12 @@
   {
     "name": "get_available_slots",
     "description": "Get open appointment slots for a provider.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/get_available_slots",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/get_available_slots",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "provider_id": "{{provider_id}}"
@@ -80,12 +80,12 @@
   {
     "name": "check_service_availability",
     "description": "Check if requested service is available on a specific day/time and get nearest alternatives.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/check_service_availability",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/check_service_availability",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "service": "{{service}}",
@@ -126,12 +126,12 @@
   {
     "name": "book_appointment",
     "description": "Book the final appointment after user confirmation.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/book_appointment",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/book_appointment",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "user_name": "{{user_name}}",
@@ -184,12 +184,12 @@
   {
     "name": "cancel_appointment",
     "description": "Cancel an existing appointment by id and remove it from Google Calendar if synced.",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/cancel_appointment",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/cancel_appointment",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "appointment_id": "{{appointment_id}}",
@@ -215,12 +215,12 @@
   {
     "name": "reschedule_appointment",
     "description": "Move a confirmed appointment to a different time slot for the same doctor. Requires appointment_id from booking and new_slot_id from check_service_availability or get_available_slots (same provider).",
-    "url": "https://appendix-footbath-unvocal.ngrok-free.dev/api/v1/tools/reschedule_appointment",
+    "url": "https://ai-powered-hospital-appointment-age.vercel.app/api/v1/tools/reschedule_appointment",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "x-tool-api-key": "cxIxjbT1bDCaN1peTpjySdq2K2xew9oQiWQTfFK58F4"
+      "x-tool-api-key": "8f5b3c2a4d9e1f7a6b0c3d8e5f1a9b2c7d4e6f8a1b3c5d7e9f0a2b4c6d8e1f3"
     },
     "body": {
       "appointment_id": "{{appointment_id}}",
