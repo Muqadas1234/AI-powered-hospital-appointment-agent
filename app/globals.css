@@ -1552,3 +1552,41 @@ button.btn-cancel-appt:hover {
   }
 }
 
+/* Filter tabs for website */
+.filter-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: #edf3ff;
+  color: #2e4475;
+  border: 1px solid #d4dff4;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.filter-tab:hover {
+  background: #e1ebff;
+  transform: translateY(-1px);
+}
+
+.filter-tab.active {
+  background: linear-gradient(180deg, #3558b6 0%, #2c4c9d 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(44, 76, 157, 0.25);
+}
+
+/* Service card clickable interaction */
+.service-landing-card {
+  cursor: pointer;
+}

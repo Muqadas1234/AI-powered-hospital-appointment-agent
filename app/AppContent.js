@@ -606,7 +606,20 @@ export default function App() {
     return { totalAppointments, confirmed, cancelled, pendingResponses, failedNotifications };
   }, [appointments, notifications]);
 
+  const filteredDoctors = useMemo(() => {
+    return providers.filter((doc) => {
+      const ds = (doc.service || "").trim().toLowerCase();
+      const sk = selectedService.trim().toLowerCase();
+      if (sk === "all") return true;
+      if (sk === "general") return ds === "general" || ds === "medicine opd";
+      if (sk === "dentist") return ds === "dentist" || ds === "dentistry";
+      if (sk === "dermatologist") return ds === "dermatologist" || ds === "dermatology";
+      return ds === sk;
+    });
+  }, [providers, selectedService]);
+
   const isAdminModulePage = panel === "admin" && adminUnlocked && adminPage !== "home";
+
 
   return (
     <div className="app-container">
@@ -741,7 +754,7 @@ export default function App() {
                   <h2 className="section-main-title">Clinical Services</h2>
                 </div>
                 <div className="services-grid">
-                  <div className="service-landing-card">
+                  <div className="service-landing-card" onClick={() => { setSelectedService("general"); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
                     <div className="service-icon-box">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M19 10.5V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9.5M3 10h18M12 3v7m-4-7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -751,7 +764,7 @@ export default function App() {
                     <p className="service-card-desc">General checkups, diagnosis of chronic illnesses, prescriptions, and health advice from experienced physicians.</p>
                     <span className="service-card-price">Consultation Fee: PKR 1,500</span>
                   </div>
-                  <div className="service-landing-card">
+                  <div className="service-landing-card" onClick={() => { setSelectedService("dentist"); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
                     <div className="service-icon-box">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
@@ -762,7 +775,7 @@ export default function App() {
                     <p className="service-card-desc">Root canal therapy, extractions, whitening, scaling, cavity fillings, and comprehensive oral health assessments.</p>
                     <span className="service-card-price">Consultation Fee: PKR 2,500</span>
                   </div>
-                  <div className="service-landing-card">
+                  <div className="service-landing-card" onClick={() => { setSelectedService("dermatologist"); document.getElementById("doctors")?.scrollIntoView({ behavior: "smooth" }); }}>
                     <div className="service-icon-box">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
@@ -781,9 +794,17 @@ export default function App() {
                   <span className="section-kicker">Meet Our Team</span>
                   <h2 className="section-main-title">Featured Doctors</h2>
                 </div>
+
+                <div className="filter-tabs">
+                  <button type="button" className={`filter-tab ${selectedService === "all" ? "active" : ""}`} onClick={() => setSelectedService("all")}>All Doctors</button>
+                  <button type="button" className={`filter-tab ${selectedService === "general" ? "active" : ""}`} onClick={() => setSelectedService("general")}>Medicine OPD</button>
+                  <button type="button" className={`filter-tab ${selectedService === "dentist" ? "active" : ""}`} onClick={() => setSelectedService("dentist")}>Dentistry</button>
+                  <button type="button" className={`filter-tab ${selectedService === "dermatologist" ? "active" : ""}`} onClick={() => setSelectedService("dermatologist")}>Dermatology</button>
+                </div>
+
                 <div className="docs-grid">
-                  {providers.length > 0 ? (
-                    providers.slice(0, visibleDoctors).map((doc) => (
+                  {filteredDoctors.length > 0 ? (
+                    filteredDoctors.slice(0, visibleDoctors).map((doc) => (
                       <div key={doc.id} className="doc-landing-card">
                         <div className="doc-avatar-box">
                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -793,16 +814,22 @@ export default function App() {
                         <h3 className="doc-name">{doc.name}</h3>
                         <p className="doc-specialty" style={{ textTransform: "capitalize" }}>{doc.service}</p>
                         <p className="doc-fee">{doc.fee_pkr ? `PKR ${doc.fee_pkr}` : "Consultation fee varies"}</p>
-                        <span className={`doc-status-badge ${doc.is_active ? "doc-status-badge--active" : "doc-status-badge--inactive"}`}>
-                          {doc.is_active ? "Available" : "Unavailable"}
-                        </span>
+                        {doc.available_slots_count > 0 ? (
+                          <span className="doc-status-badge doc-status-badge--active">
+                            Available ({doc.available_slots_count} slots)
+                          </span>
+                        ) : (
+                          <span className="doc-status-badge doc-status-badge--inactive">
+                            Fully Booked
+                          </span>
+                        )}
                       </div>
                     ))
                   ) : (
-                    <p style={{ textAlign: "center", gridColumn: "1 / -1", color: "var(--text-soft)" }}>No doctors configured currently. Switch to admin to add doctors.</p>
+                    <p style={{ textAlign: "center", gridColumn: "1 / -1", color: "var(--text-soft)" }}>No doctors configured for the selected service currently. Switch to admin to add doctors.</p>
                   )}
                 </div>
-                {providers.length > visibleDoctors && (
+                {filteredDoctors.length > visibleDoctors && (
                   <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
                     <button type="button" className="btn-secondary" onClick={() => setVisibleDoctors((prev) => prev + 12)}>
                       See More
@@ -810,6 +837,7 @@ export default function App() {
                   </div>
                 )}
               </section>
+
 
 
               {/* FAQs Section */}
