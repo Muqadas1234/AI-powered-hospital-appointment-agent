@@ -1026,3 +1026,507 @@ button.btn-cancel-appt:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================
+   PUBLIC WEBSITE PORTAL STYLES
+   ========================================== */
+
+/* Navbar & Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(238, 243, 255, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(216, 226, 243, 0.6);
+  padding: 14px 24px;
+  margin-bottom: 24px;
+}
+
+.site-header .shell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.site-brand svg {
+  color: var(--brand-600);
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.site-nav-link {
+  color: var(--text-soft);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.925rem;
+  transition: color 0.2s ease;
+}
+
+.site-nav-link:hover {
+  color: var(--brand-600);
+}
+
+.site-nav-link.active {
+  color: var(--brand-600);
+  font-weight: 600;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  background: radial-gradient(circle at 80% 20%, rgba(206, 222, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%),
+              linear-gradient(145deg, #ffffff 0%, #f4f8ff 100%);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  border-radius: 24px;
+  padding: 64px 48px;
+  margin-bottom: 48px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 40px;
+  overflow: hidden;
+}
+
+.hero-info {
+  z-index: 2;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(53, 88, 182, 0.08);
+  color: var(--brand-600);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.hero-main-title {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--text-main);
+  margin: 0 0 18px 0;
+  letter-spacing: -0.02em;
+}
+
+.hero-main-title span {
+  color: var(--brand-600);
+  background: linear-gradient(120deg, #3558b6, #5d88f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub-text {
+  font-size: 1.125rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+  margin-bottom: 32px;
+  max-width: 580px;
+}
+
+.hero-badges-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+
+.hero-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+}
+
+.hero-badge-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.hero-art-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Floating call widget card on landing */
+.landing-call-card {
+  background: #ffffff;
+  border: 1px solid #d8e2f3;
+  box-shadow: 0 20px 40px rgba(25, 54, 112, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  animation: floatCard 4s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.call-card-logo-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #eef4ff 0%, #d5e3fc 100%);
+  color: var(--brand-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 8px 16px rgba(53, 88, 182, 0.15);
+}
+
+.call-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: var(--text-main);
+}
+
+.call-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+/* Services / Features */
+.section-title-wrap {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-kicker {
+  color: var(--brand-600);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.section-main-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 6px 0 0 0;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 56px;
+}
+
+.service-landing-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.service-landing-card:hover {
+  transform: translateY(-5px);
+  border-color: #3558b6;
+  box-shadow: 0 14px 28px rgba(53, 88, 182, 0.08);
+}
+
+.service-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(53, 88, 182, 0.06);
+  color: var(--brand-600);
+}
+
+.service-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.service-card-desc {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.service-card-price {
+  margin-top: auto;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-600);
+  background: rgba(53, 88, 182, 0.05);
+  padding: 4px 10px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+
+/* Doctors showcase */
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 56px;
+}
+
+.doc-landing-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.doc-landing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+  border-color: #3558b6;
+}
+
+.doc-avatar-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0ebff 0%, #b8d2ff 100%);
+  color: var(--brand-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  border: 3px solid #ffffff;
+  box-shadow: 0 6px 14px rgba(53, 88, 182, 0.1);
+}
+
+.doc-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.doc-specialty {
+  font-size: 0.85rem;
+  color: var(--brand-600);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.doc-fee {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  margin-bottom: 16px;
+}
+
+.doc-status-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.doc-status-badge--active {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.doc-status-badge--inactive {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* FAQs on Landing */
+.faqs-landing-section {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 56px;
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-accordion-item {
+  border-bottom: 1px solid var(--line);
+  padding: 18px 0;
+}
+
+.faq-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.faq-question-btn:hover {
+  color: var(--brand-600);
+}
+
+.faq-answer-panel {
+  margin-top: 10px;
+  font-size: 0.925rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+/* Footer */
+.site-footer {
+  background: #0f172a;
+  color: #94a3b8;
+  padding: 48px 24px 24px 24px;
+  margin-top: 64px;
+  border-radius: 20px 20px 0 0;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #334155;
+}
+
+.footer-brand h4 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin: 0 0 10px 0;
+}
+
+.footer-brand p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.footer-links h5, .footer-contact h5 {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links ul li {
+  margin-bottom: 10px;
+}
+
+.footer-links ul li a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links ul li a:hover {
+  color: #ffffff;
+}
+
+.footer-contact p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  font-size: 0.8rem;
+}
+
+/* Responsive grid overrides */
+@media (max-width: 768px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  
+  .hero-sub-text {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .hero-badges-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
+

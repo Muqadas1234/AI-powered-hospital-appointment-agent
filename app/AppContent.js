@@ -148,6 +148,29 @@ export default function App() {
     }
   };
 
+  const loadPublicData = async () => {
+    try {
+      const [pubProviders, pubFaqs] = await Promise.all([
+        fetch(`${apiBase}/api/v1/public/providers`).then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch public providers");
+          return res.json();
+        }),
+        fetch(`${apiBase}/api/v1/public/faqs`).then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch public FAQs");
+          return res.json();
+        }),
+      ]);
+      setProviders(pubProviders || []);
+      setFaqs(pubFaqs || []);
+    } catch (err) {
+      console.error("Public data load failed:", err.message);
+    }
+  };
+
+  useEffect(() => {
+    loadPublicData();
+  }, []);
+
   useEffect(() => {
     if (!publicKey) {
       vapiRef.current = null;
@@ -584,364 +607,565 @@ export default function App() {
   const isAdminModulePage = panel === "admin" && adminUnlocked && adminPage !== "home";
 
   return (
-    <main className="page">
-      <section className="shell">
-        {!isAdminModulePage ? (
-          <header className="hero hero-clean app-header">
-            <div className="app-header-brand">
-              <div className="app-logo-wrap" aria-hidden="true" title="Voice helpline">
-                <svg className="app-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M3 18v-6a9 9 0 0 1 18 0v6"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div>
-                <p className="kicker">{APP_NAME}</p>
-                <h1>{APP_TAGLINE}</h1>
-                <p className="subtle">Talk to our AI receptionist for bookings, or switch to Admin for staff tools.</p>
-              </div>
-            </div>
-            <div className="actions app-header-tabs">
-              <button type="button" className={panel === "user" ? "tab active" : "tab"} onClick={() => setPanel("user")}>
-                Patient call
+    <div className="app-container">
+      {panel === "user" && (
+        <header className="site-header">
+          <div className="shell">
+            <a href="#" className="site-brand">
+              <svg className="app-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width: 24, height: 24}}>
+                <path
+                  d="M3 18v-6a9 9 0 0 1 18 0v6"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>{APP_NAME}</span>
+            </a>
+            <nav className="site-nav">
+              <a href="#home" className="site-nav-link">Home</a>
+              <a href="#services" className="site-nav-link">Services</a>
+              <a href="#doctors" className="site-nav-link">Doctors</a>
+              <a href="#faqs" className="site-nav-link">FAQs</a>
+              <button type="button" className="btn-secondary" onClick={() => setPanel("admin")} style={{padding: "6px 12px", fontSize: "0.85rem", borderRadius: "8px"}}>
+                Staff Admin
               </button>
-              <button type="button" className={panel === "admin" ? "tab active" : "tab"} onClick={() => setPanel("admin")}>
-                Staff admin
-              </button>
-            </div>
-          </header>
-        ) : null}
+            </nav>
+          </div>
+        </header>
+      )}
 
-        {error ? <p className="error">{error}</p> : null}
-
-        {panel === "user" && (
-          <section className="panel user-landing">
-            <article className="card user-hero-card">
-              <div className="user-hero-inner">
-                <div>
-                  <h2 className="user-hero-title">Talk to reception</h2>
-                  <p className="muted user-hero-desc">
-                    Start a live voice session — same as calling the hospital desk. You can book, ask about services, or change an appointment.
-                  </p>
+      <main className="page">
+        <section className="shell">
+          {panel === "admin" && !isAdminModulePage ? (
+            <header className="hero hero-clean app-header">
+              <div className="app-header-brand">
+                <div className="app-logo-wrap" aria-hidden="true" title="Voice helpline">
+                  <svg className="app-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M3 18v-6a9 9 0 0 1 18 0v6"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </div>
-                <button type="button" className="btn-voice-primary" onClick={startCall} disabled={isCalling}>
-                  {isCalling ? "Call in progress…" : "Start voice call"}
+                <div>
+                  <p className="kicker">{APP_NAME} Admin</p>
+                  <h1>Staff Dashboard</h1>
+                  <p className="subtle">Configure clinical providers, slot schedules, and check notification logs.</p>
+                </div>
+              </div>
+              <div className="actions app-header-tabs">
+                <button type="button" className="tab" onClick={() => setPanel("user")}>
+                  ← Patient Portal
                 </button>
               </div>
-            </article>
-            {isCalling ? (
-              <div className="voice-call-overlay" role="dialog" aria-modal="true" aria-labelledby="voice-call-title">
-                <div className="voice-call-backdrop" />
-                <div className="voice-call-content">
-                  <p id="voice-call-title" className="voice-call-brand">
-                    {APP_NAME}
+            </header>
+          ) : null}
+
+          {error ? <p className="error">{error}</p> : null}
+
+          {panel === "user" && (
+            <div className="user-portal-content">
+              {/* Hero Section */}
+              <section id="home" className="hero-section">
+                <div className="hero-info">
+                  <span className="hero-tag">AI Assistant Helpline</span>
+                  <h1 className="hero-main-title">
+                    Your Health, Our Priority. <br />
+                    <span>Call to Book Instantly.</span>
+                  </h1>
+                  <p className="hero-sub-text">
+                    Skip the queue and talk directly to our intelligent voice receptionist. Schedule checks, inquire about services, or reschedule your slot with ease.
                   </p>
-                  <p className="voice-call-sub">{APP_TAGLINE}</p>
-                  <div className="voice-orb-wrap" aria-hidden="true">
-                    <span className="voice-orb-ring voice-orb-ring--a" />
-                    <span className="voice-orb-ring voice-orb-ring--b" />
-                    <span className="voice-orb-ring voice-orb-ring--c" />
-                    <div className="voice-orb-core">
-                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <div className="hero-badges-row">
+                    <div className="hero-badge-item">
+                      <span className="hero-badge-dot"></span>
+                      <span className="hero-badge-text">24/7 Helpline</span>
+                    </div>
+                    <div className="hero-badge-item">
+                      <span className="hero-badge-dot"></span>
+                      <span className="hero-badge-text">Instant Confirmation</span>
+                    </div>
+                    <div className="hero-badge-item">
+                      <span className="hero-badge-dot"></span>
+                      <span className="hero-badge-text">SMS & WhatsApp Alerts</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="hero-art-container">
+                  <div className="landing-call-card">
+                    <div className="call-card-logo-wrap">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M6.62 10.79a15.06 15.06 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.31.56 3.55.56a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.85 21 3 13.15 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.19 2.43.56 3.55a1 1 0 0 1-.24 1.02l-2.2 2.22Z"
                           stroke="currentColor"
-                          strokeWidth="1.75"
+                          strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
                       </svg>
                     </div>
+                    <h3 className="call-card-title">Voice Booking</h3>
+                    <p className="call-card-desc">Click below to start an interactive call with our digital receptionist to handle your appointment.</p>
+                    <button type="button" className="btn-voice-primary" onClick={startCall} disabled={isCalling} style={{ width: "100%" }}>
+                      {isCalling ? "Call in progress…" : "Start Voice Call"}
+                    </button>
                   </div>
-                  <p className="voice-call-status">{status}</p>
-                  <p className="voice-call-timer">Call duration: {callTimerLabel}</p>
-                  <button type="button" className="btn-end-call" onClick={endCall}>
-                    End call
+                </div>
+              </section>
+
+              {/* Services Section */}
+              <section id="services" style={{ padding: "40px 0" }}>
+                <div className="section-title-wrap">
+                  <span className="section-kicker">Specialized Care</span>
+                  <h2 className="section-main-title">Clinical Services</h2>
+                </div>
+                <div className="services-grid">
+                  <div className="service-landing-card">
+                    <div className="service-icon-box">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 10.5V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9.5M3 10h18M12 3v7m-4-7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                    <h3 className="service-card-title">Medicine OPD</h3>
+                    <p className="service-card-desc">General checkups, diagnosis of chronic illnesses, prescriptions, and health advice from experienced physicians.</p>
+                    <span className="service-card-price">Consultation Fee: PKR 1,500</span>
+                  </div>
+                  <div className="service-landing-card">
+                    <div className="service-icon-box">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                    </div>
+                    <h3 className="service-card-title">Dentistry</h3>
+                    <p className="service-card-desc">Root canal therapy, extractions, whitening, scaling, cavity fillings, and comprehensive oral health assessments.</p>
+                    <span className="service-card-price">Consultation Fee: PKR 2,500</span>
+                  </div>
+                  <div className="service-landing-card">
+                    <div className="service-icon-box">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
+                      </svg>
+                    </div>
+                    <h3 className="service-card-title">Dermatology</h3>
+                    <p className="service-card-desc">Expert diagnosis for acne, eczema, hair loss, skin infections, pigmentation, and specialized cosmetic skin care.</p>
+                    <span className="service-card-price">Consultation Fee: PKR 3,000</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Doctors Section */}
+              <section id="doctors" style={{ padding: "40px 0" }}>
+                <div className="section-title-wrap">
+                  <span className="section-kicker">Meet Our Team</span>
+                  <h2 className="section-main-title">Featured Doctors</h2>
+                </div>
+                <div className="docs-grid">
+                  {providers.length > 0 ? (
+                    providers.map((doc) => (
+                      <div key={doc.id} className="doc-landing-card">
+                        <div className="doc-avatar-box">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <h3 className="doc-name">{doc.name}</h3>
+                        <p className="doc-specialty" style={{ textTransform: "capitalize" }}>{doc.service}</p>
+                        <p className="doc-fee">{doc.fee_pkr ? `PKR ${doc.fee_pkr}` : "Consultation fee varies"}</p>
+                        <span className={`doc-status-badge ${doc.is_active ? "doc-status-badge--active" : "doc-status-badge--inactive"}`}>
+                          {doc.is_active ? "Available" : "Unavailable"}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <p style={{ textAlign: "center", gridColumn: "1 / -1", color: "var(--text-soft)" }}>No doctors configured currently. Switch to admin to add doctors.</p>
+                  )}
+                </div>
+              </section>
+
+              {/* FAQs Section */}
+              <section id="faqs" className="faqs-landing-section">
+                <div className="section-title-wrap">
+                  <span className="section-kicker">Got Questions?</span>
+                  <h2 className="section-main-title">Frequently Asked Questions</h2>
+                </div>
+                <div>
+                  {faqs.length > 0 ? (
+                    faqs.map((faq) => (
+                      <FaqAccordionItem key={faq.id} question={faq.question} answer={faq.answer} />
+                    ))
+                  ) : (
+                    <>
+                      <FaqAccordionItem
+                        question="How do I book an appointment using the voice call?"
+                        answer="Simply click the 'Start Voice Call' button in the booking widget. It connects you to our AI assistant. Speak naturally, tell the assistant which doctor or service you need, your preferred time, and your phone number. The assistant will schedule it and send you a confirmation."
+                      />
+                      <FaqAccordionItem
+                        question="Will I receive reminders?"
+                        answer="Yes! Once booked, our system schedules automated SMS and WhatsApp confirmation alerts, along with helpful check-in reminders sent ahead of your slot time."
+                      />
+                      <FaqAccordionItem
+                        question="Can I cancel or reschedule my appointment?"
+                        answer="Yes, you can initiate a voice call to cancel or reschedule, or contact the helpline. If the hospital staff cancels a slot, you will receive an automatic notification via SMS."
+                      />
+                    </>
+                  )}
+                </div>
+              </section>
+            </div>
+          )}
+
+          {isCalling ? (
+            <div className="voice-call-overlay" role="dialog" aria-modal="true" aria-labelledby="voice-call-title">
+              <div className="voice-call-backdrop" />
+              <div className="voice-call-content">
+                <p id="voice-call-title" className="voice-call-brand">
+                  {APP_NAME}
+                </p>
+                <p className="voice-call-sub">{APP_TAGLINE}</p>
+                <div className="voice-orb-wrap" aria-hidden="true">
+                  <span className="voice-orb-ring voice-orb-ring--a" />
+                  <span className="voice-orb-ring voice-orb-ring--b" />
+                  <span className="voice-orb-ring voice-orb-ring--c" />
+                  <div className="voice-orb-core">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path
+                        d="M6.62 10.79a15.06 15.06 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.31.56 3.55.56a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.85 21 3 13.15 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.19 2.43.56 3.55a1 1 0 0 1-.24 1.02l-2.2 2.22Z"
+                        stroke="currentColor"
+                        strokeWidth="1.75"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <p className="voice-call-status">{status}</p>
+                <p className="voice-call-timer">Call duration: {callTimerLabel}</p>
+                <button type="button" className="btn-end-call" onClick={endCall}>
+                  End call
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {panel === "admin" && !adminUnlocked && (
+            <section className="panel">
+              <article className="card login-card">
+                <h3>Admin Login</h3>
+                <p className="muted">Temporary UI login gate (backend auth can be enforced later).</p>
+                <div className="form-grid">
+                  <input placeholder="Admin username" value={adminLogin.username} onChange={(e) => setAdminLogin({ ...adminLogin, username: e.target.value })} />
+                  <input type="password" placeholder="Admin password" value={adminLogin.password} onChange={(e) => setAdminLogin({ ...adminLogin, password: e.target.value })} />
+                </div>
+                <div className="actions">
+                  <button onClick={unlockAdmin}>Enter Admin Dashboard</button>
+                  <button type="button" className="btn-secondary" onClick={() => setPanel("user")}>Back to Portal</button>
+                </div>
+              </article>
+            </section>
+          )}
+
+          {panel === "admin" && adminUnlocked && (
+            <>
+              <div className="tabs">
+                {adminPage !== "home" ? (
+                  <button className="btn-secondary" onClick={() => navigateAdminPage("home")}>
+                    ← Back to modules
+                  </button>
+                ) : null}
+                <button className="btn-secondary" onClick={loadDashboard} disabled={loading}>
+                  {loading ? "Refreshing..." : "Refresh data"}
+                </button>
+                <button className="btn-secondary" onClick={logoutAdmin}>Logout</button>
+              </div>
+              {adminPage !== "home" ? (
+                <section className="module-header-card">
+                  <p className="module-kicker">Admin Module</p>
+                  <h2>{tabLabels[adminPage] || "Module"}</h2>
+                  <p>{moduleDescriptions[adminPage] || "Manage this section from the admin console."}</p>
+                </section>
+              ) : null}
+              {adminPage === "home" ? (
+                <section className="stats-grid">
+                  <article className="stat-card stat-card--blue">
+                    <p className="stat-label">Total appointments</p>
+                    <p className="stat-value">{adminStats.totalAppointments}</p>
+                  </article>
+                  <article className="stat-card stat-card--green">
+                    <p className="stat-label">Confirmed</p>
+                    <p className="stat-value">{adminStats.confirmed}</p>
+                  </article>
+                  <article className="stat-card stat-card--amber">
+                    <p className="stat-label">Awaiting response</p>
+                    <p className="stat-value">{adminStats.pendingResponses}</p>
+                  </article>
+                  <article className="stat-card stat-card--red">
+                    <p className="stat-label">Cancelled</p>
+                    <p className="stat-value">{adminStats.cancelled}</p>
+                  </article>
+                  <article className="stat-card stat-card--violet">
+                    <p className="stat-label">Failed notifications</p>
+                    <p className="stat-value">{adminStats.failedNotifications}</p>
+                  </article>
+                </section>
+              ) : null}
+
+              {adminPage === "home" && (
+                <section className="panel">
+                  <article className="card">
+                    <h3>Admin Modules</h3>
+                    <p className="muted">Open one section at a time for a cleaner workflow.</p>
+                    <div className="module-grid">
+                      {tabs.map((tab) => (
+                        <button
+                          key={tab}
+                          type="button"
+                          className="module-card"
+                          onClick={() => navigateAdminPage(tab)}
+                        >
+                          <span className="module-title">{tabLabels[tab] || tab}</span>
+                          <span className="module-subtitle">Open section</span>
+                        </button>
+                      ))}
+                    </div>
+                  </article>
+                </section>
+              )}
+
+              {adminPage === "providers" && (
+                <section className="panel">
+                  <article className="card">
+                    <h3>Create Provider</h3>
+                    <div className="form-grid">
+                      <input placeholder="Name" value={providerForm.name} onChange={(e) => setProviderForm({ ...providerForm, name: e.target.value })} />
+                      <input placeholder="Service (general/dentist/dermatologist)" value={providerForm.service} onChange={(e) => setProviderForm({ ...providerForm, service: e.target.value })} />
+                      <input placeholder="Fee PKR (e.g. 2500)" type="number" min="0" value={providerForm.fee_pkr} onChange={(e) => setProviderForm({ ...providerForm, fee_pkr: e.target.value })} />
+                    </div>
+                    <div className="actions">
+                      <button onClick={createProvider}>Add Provider</button>
+                    </div>
+                  </article>
+                  <article className="card">
+                    <h3>Providers</h3>
+                    <p className="muted">Edit name, service, or active status — changes save to the database.</p>
+                    <TableProvider
+                      providers={providers}
+                      onDelete={deleteProvider}
+                      editingId={providerEditId}
+                      edit={providerEdit}
+                      onEditChange={setProviderEdit}
+                      onStartEdit={(p) => {
+                        setProviderEditId(p.id);
+                        setProviderEdit({ name: p.name, service: p.service, fee_pkr: p.fee_pkr ?? "", is_active: !!p.is_active });
+                      }}
+                      onCancelEdit={() => setProviderEditId(null)}
+                      onSaveEdit={saveProviderEdit}
+                    />
+                  </article>
+                </section>
+              )}
+
+              {adminPage === "slots" && (
+                <section className="panel">
+                  <article className="card">
+                    <h3>Create Single Slot</h3>
+                    <div className="form-grid">
+                      <input placeholder="Provider ID" value={slotForm.provider_id} onChange={(e) => setSlotForm({ ...slotForm, provider_id: e.target.value })} />
+                      <input type="date" value={slotForm.date} onChange={(e) => setSlotForm({ ...slotForm, date: e.target.value })} />
+                      <input type="time" step="1" value={slotForm.time} onChange={(e) => setSlotForm({ ...slotForm, time: e.target.value })} />
+                      <input type="time" step="1" value={slotForm.end_time} onChange={(e) => setSlotForm({ ...slotForm, end_time: e.target.value })} />
+                    </div>
+                    <div className="actions">
+                      <button onClick={createSlot}>Create Slot</button>
+                    </div>
+                  </article>
+                  <article className="card">
+                    <h3>Bulk Slot Generator</h3>
+                    <div className="form-grid">
+                      <input placeholder="Provider ID" value={bulkSlotForm.provider_id} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, provider_id: e.target.value })} />
+                      <input type="date" value={bulkSlotForm.start_date} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, start_date: e.target.value })} />
+                      <input placeholder="Days" value={bulkSlotForm.days} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, days: e.target.value })} />
+                      <input placeholder="Times CSV e.g. 10:00,12:00,15:00" value={bulkSlotForm.times} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, times: e.target.value })} />
+                      <input placeholder="Duration minutes (e.g. 30)" value={bulkSlotForm.duration_minutes} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, duration_minutes: e.target.value })} />
+                    </div>
+                    <div className="actions">
+                      <button onClick={createBulkSlots}>Create Bulk Slots</button>
+                    </div>
+                  </article>
+                  <article className="card">
+                    <h3>Slots</h3>
+                    <p className="muted">Only unbooked slots can be edited (date / start / end).</p>
+                    <TableSlots
+                      slots={slots}
+                      onDelete={deleteSlot}
+                      editingId={slotEditId}
+                      edit={slotEdit}
+                      onEditChange={setSlotEdit}
+                      onStartEdit={(s) => {
+                        setSlotEditId(s.id);
+                        setSlotEdit({
+                          date: String(s.date || "").slice(0, 10),
+                          time: normalizeTime(s.time),
+                          end_time: normalizeTime(s.end_time || s.time),
+                        });
+                      }}
+                      onCancelEdit={() => setSlotEditId(null)}
+                      onSaveEdit={saveSlotEdit}
+                    />
+                  </article>
+                </section>
+              )}
+
+              {adminPage === "appointments" && (
+                <section className="panel">
+                  <article className="card">
+                    <h3>Appointments</h3>
+                    <p className="muted">
+                      <strong>Cancel</strong> notifies the patient by SMS, removes the calendar event, and frees the slot.
+                      <strong> Remove record</strong> permanently deletes the row (use only when needed).
+                    </p>
+                    <TableAppointments
+                      appointments={appointments}
+                      onRequestCancel={(id) => setCancelModalId(id)}
+                      onHardDelete={deleteAppointmentHard}
+                    />
+                  </article>
+                </section>
+              )}
+
+              {adminPage === "faqs" && (
+                <section className="panel">
+                  <article className="card">
+                    <h3>Create FAQ</h3>
+                    <div className="form-grid">
+                      <input placeholder="Question" value={faqForm.question} onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })} />
+                      <input placeholder="Answer" value={faqForm.answer} onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })} />
+                    </div>
+                    <div className="actions">
+                      <button onClick={createFaq}>Add FAQ</button>
+                    </div>
+                  </article>
+                  <article className="card">
+                    <h3>FAQs</h3>
+                    <TableFaqs
+                      faqs={faqs}
+                      onDelete={deleteFaq}
+                      editingId={faqEditId}
+                      edit={faqEdit}
+                      onEditChange={setFaqEdit}
+                      onStartEdit={(f) => {
+                        setFaqEditId(f.id);
+                        setFaqEdit({ question: f.question, answer: f.answer, is_active: !!f.is_active });
+                      }}
+                      onCancelEdit={() => setFaqEditId(null)}
+                      onSaveEdit={saveFaqEdit}
+                    />
+                  </article>
+                </section>
+              )}
+
+              {adminPage === "notifications" && (
+                <section className="panel">
+                  <article className="card">
+                    <h3>Notification Logs</h3>
+                    <TableNotifications rows={notifications} onDelete={deleteNotificationLog} />
+                  </article>
+                </section>
+              )}
+            </>
+          )}
+
+          {adminUnlocked && cancelModalId != null ? (
+            <div
+              className="admin-modal-backdrop"
+              role="presentation"
+              onClick={() => setCancelModalId(null)}
+            >
+              <div
+                className="admin-modal"
+                role="dialog"
+                aria-labelledby="cancel-modal-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 id="cancel-modal-title">Cancel appointment #{cancelModalId}</h3>
+                <p className="muted">
+                  Message below is sent to the patient by SMS. Use the phone number from booking.
+                </p>
+                <label className="admin-modal-label" htmlFor="cancel-reason">
+                  Reason for patient
+                </label>
+                <textarea
+                  id="cancel-reason"
+                  className="admin-modal-textarea"
+                  rows={4}
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="e.g. Doctor emergency — please book another slot via our assistant."
+                />
+                <div className="admin-modal-actions">
+                  <button type="button" className="btn-cancel-confirm" onClick={submitAdminCancel}>
+                    Confirm cancel
+                  </button>
+                  <button type="button" className="btn-secondary" onClick={() => setCancelModalId(null)}>
+                    Close
                   </button>
                 </div>
               </div>
-            ) : null}
-          </section>
-        )}
-
-        {panel === "admin" && !adminUnlocked && (
-          <section className="panel">
-            <article className="card login-card">
-              <h3>Admin Login</h3>
-              <p className="muted">Temporary UI login gate (backend auth can be enforced later).</p>
-              <div className="form-grid">
-                <input placeholder="Admin username" value={adminLogin.username} onChange={(e) => setAdminLogin({ ...adminLogin, username: e.target.value })} />
-                <input type="password" placeholder="Admin password" value={adminLogin.password} onChange={(e) => setAdminLogin({ ...adminLogin, password: e.target.value })} />
-              </div>
-              <div className="actions">
-                <button onClick={unlockAdmin}>Enter Admin Dashboard</button>
-              </div>
-            </article>
-          </section>
-        )}
-
-        {panel === "admin" && adminUnlocked && (
-          <>
-            <div className="tabs">
-              {adminPage !== "home" ? (
-                <button className="btn-secondary" onClick={() => navigateAdminPage("home")}>
-                  ← Back to modules
-                </button>
-              ) : null}
-              <button className="btn-secondary" onClick={loadDashboard} disabled={loading}>
-                {loading ? "Refreshing..." : "Refresh data"}
-              </button>
-              <button className="btn-secondary" onClick={logoutAdmin}>Logout</button>
             </div>
-            {adminPage !== "home" ? (
-              <section className="module-header-card">
-                <p className="module-kicker">Admin Module</p>
-                <h2>{tabLabels[adminPage] || "Module"}</h2>
-                <p>{moduleDescriptions[adminPage] || "Manage this section from the admin console."}</p>
-              </section>
-            ) : null}
-            {adminPage === "home" ? (
-              <section className="stats-grid">
-                <article className="stat-card stat-card--blue">
-                  <p className="stat-label">Total appointments</p>
-                  <p className="stat-value">{adminStats.totalAppointments}</p>
-                </article>
-                <article className="stat-card stat-card--green">
-                  <p className="stat-label">Confirmed</p>
-                  <p className="stat-value">{adminStats.confirmed}</p>
-                </article>
-                <article className="stat-card stat-card--amber">
-                  <p className="stat-label">Awaiting response</p>
-                  <p className="stat-value">{adminStats.pendingResponses}</p>
-                </article>
-                <article className="stat-card stat-card--red">
-                  <p className="stat-label">Cancelled</p>
-                  <p className="stat-value">{adminStats.cancelled}</p>
-                </article>
-                <article className="stat-card stat-card--violet">
-                  <p className="stat-label">Failed notifications</p>
-                  <p className="stat-value">{adminStats.failedNotifications}</p>
-                </article>
-              </section>
-            ) : null}
+          ) : null}
+        </section>
+      </main>
 
-            {adminPage === "home" && (
-              <section className="panel">
-                <article className="card">
-                  <h3>Admin Modules</h3>
-                  <p className="muted">Open one section at a time for a cleaner workflow.</p>
-                  <div className="module-grid">
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab}
-                        type="button"
-                        className="module-card"
-                        onClick={() => navigateAdminPage(tab)}
-                      >
-                        <span className="module-title">{tabLabels[tab] || tab}</span>
-                        <span className="module-subtitle">Open section</span>
-                      </button>
-                    ))}
-                  </div>
-                </article>
-              </section>
-            )}
-
-            {adminPage === "providers" && (
-              <section className="panel">
-                <article className="card">
-                  <h3>Create Provider</h3>
-                  <div className="form-grid">
-                    <input placeholder="Name" value={providerForm.name} onChange={(e) => setProviderForm({ ...providerForm, name: e.target.value })} />
-                    <input placeholder="Service (general/dentist/dermatologist)" value={providerForm.service} onChange={(e) => setProviderForm({ ...providerForm, service: e.target.value })} />
-                    <input placeholder="Fee PKR (e.g. 2500)" type="number" min="0" value={providerForm.fee_pkr} onChange={(e) => setProviderForm({ ...providerForm, fee_pkr: e.target.value })} />
-                  </div>
-                  <div className="actions">
-                    <button onClick={createProvider}>Add Provider</button>
-                  </div>
-                </article>
-                <article className="card">
-                  <h3>Providers</h3>
-                  <p className="muted">Edit name, service, or active status — changes save to the database.</p>
-                  <TableProvider
-                    providers={providers}
-                    onDelete={deleteProvider}
-                    editingId={providerEditId}
-                    edit={providerEdit}
-                    onEditChange={setProviderEdit}
-                    onStartEdit={(p) => {
-                      setProviderEditId(p.id);
-                      setProviderEdit({ name: p.name, service: p.service, fee_pkr: p.fee_pkr ?? "", is_active: !!p.is_active });
-                    }}
-                    onCancelEdit={() => setProviderEditId(null)}
-                    onSaveEdit={saveProviderEdit}
-                  />
-                </article>
-              </section>
-            )}
-
-            {adminPage === "slots" && (
-              <section className="panel">
-                <article className="card">
-                  <h3>Create Single Slot</h3>
-                  <div className="form-grid">
-                    <input placeholder="Provider ID" value={slotForm.provider_id} onChange={(e) => setSlotForm({ ...slotForm, provider_id: e.target.value })} />
-                    <input type="date" value={slotForm.date} onChange={(e) => setSlotForm({ ...slotForm, date: e.target.value })} />
-                    <input type="time" step="1" value={slotForm.time} onChange={(e) => setSlotForm({ ...slotForm, time: e.target.value })} />
-                    <input type="time" step="1" value={slotForm.end_time} onChange={(e) => setSlotForm({ ...slotForm, end_time: e.target.value })} />
-                  </div>
-                  <div className="actions">
-                    <button onClick={createSlot}>Create Slot</button>
-                  </div>
-                </article>
-                <article className="card">
-                  <h3>Bulk Slot Generator</h3>
-                  <div className="form-grid">
-                    <input placeholder="Provider ID" value={bulkSlotForm.provider_id} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, provider_id: e.target.value })} />
-                    <input type="date" value={bulkSlotForm.start_date} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, start_date: e.target.value })} />
-                    <input placeholder="Days" value={bulkSlotForm.days} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, days: e.target.value })} />
-                    <input placeholder="Times CSV e.g. 10:00,12:00,15:00" value={bulkSlotForm.times} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, times: e.target.value })} />
-                    <input placeholder="Duration minutes (e.g. 30)" value={bulkSlotForm.duration_minutes} onChange={(e) => setBulkSlotForm({ ...bulkSlotForm, duration_minutes: e.target.value })} />
-                  </div>
-                  <div className="actions">
-                    <button onClick={createBulkSlots}>Create Bulk Slots</button>
-                  </div>
-                </article>
-                <article className="card">
-                  <h3>Slots</h3>
-                  <p className="muted">Only unbooked slots can be edited (date / start / end).</p>
-                  <TableSlots
-                    slots={slots}
-                    onDelete={deleteSlot}
-                    editingId={slotEditId}
-                    edit={slotEdit}
-                    onEditChange={setSlotEdit}
-                    onStartEdit={(s) => {
-                      setSlotEditId(s.id);
-                      setSlotEdit({
-                        date: String(s.date || "").slice(0, 10),
-                        time: normalizeTime(s.time),
-                        end_time: normalizeTime(s.end_time || s.time),
-                      });
-                    }}
-                    onCancelEdit={() => setSlotEditId(null)}
-                    onSaveEdit={saveSlotEdit}
-                  />
-                </article>
-              </section>
-            )}
-
-            {adminPage === "appointments" && (
-              <section className="panel">
-                <article className="card">
-                  <h3>Appointments</h3>
-                  <p className="muted">
-                    <strong>Cancel</strong> notifies the patient by SMS, removes the calendar event, and frees the slot.
-                    <strong> Remove record</strong> permanently deletes the row (use only when needed).
-                  </p>
-                  <TableAppointments
-                    appointments={appointments}
-                    onRequestCancel={(id) => setCancelModalId(id)}
-                    onHardDelete={deleteAppointmentHard}
-                  />
-                </article>
-              </section>
-            )}
-
-            {adminPage === "faqs" && (
-              <section className="panel">
-                <article className="card">
-                  <h3>Create FAQ</h3>
-                  <div className="form-grid">
-                    <input placeholder="Question" value={faqForm.question} onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })} />
-                    <input placeholder="Answer" value={faqForm.answer} onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })} />
-                  </div>
-                  <div className="actions">
-                    <button onClick={createFaq}>Add FAQ</button>
-                  </div>
-                </article>
-                <article className="card">
-                  <h3>FAQs</h3>
-                  <TableFaqs
-                    faqs={faqs}
-                    onDelete={deleteFaq}
-                    editingId={faqEditId}
-                    edit={faqEdit}
-                    onEditChange={setFaqEdit}
-                    onStartEdit={(f) => {
-                      setFaqEditId(f.id);
-                      setFaqEdit({ question: f.question, answer: f.answer, is_active: !!f.is_active });
-                    }}
-                    onCancelEdit={() => setFaqEditId(null)}
-                    onSaveEdit={saveFaqEdit}
-                  />
-                </article>
-              </section>
-            )}
-
-            {adminPage === "notifications" && (
-              <section className="panel">
-                <article className="card">
-                  <h3>Notification Logs</h3>
-                  <TableNotifications rows={notifications} onDelete={deleteNotificationLog} />
-                </article>
-              </section>
-            )}
-          </>
-        )}
-
-        {adminUnlocked && cancelModalId != null ? (
-          <div
-            className="admin-modal-backdrop"
-            role="presentation"
-            onClick={() => setCancelModalId(null)}
-          >
-            <div
-              className="admin-modal"
-              role="dialog"
-              aria-labelledby="cancel-modal-title"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 id="cancel-modal-title">Cancel appointment #{cancelModalId}</h3>
-              <p className="muted">
-                Message below is sent to the patient by SMS. Use the phone number from booking.
-              </p>
-              <label className="admin-modal-label" htmlFor="cancel-reason">
-                Reason for patient
-              </label>
-              <textarea
-                id="cancel-reason"
-                className="admin-modal-textarea"
-                rows={4}
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="e.g. Doctor emergency — please book another slot via our assistant."
-              />
-              <div className="admin-modal-actions">
-                <button type="button" className="btn-cancel-confirm" onClick={submitAdminCancel}>
-                  Confirm cancel
-                </button>
-                <button type="button" className="btn-secondary" onClick={() => setCancelModalId(null)}>
-                  Close
-                </button>
+      {panel === "user" && (
+        <footer className="site-footer">
+          <div className="shell">
+            <div className="footer-top">
+              <div className="footer-brand">
+                <h4>{APP_NAME}</h4>
+                <p>Smart voice-activated hospital reception desk designed to give patients instant bookings and service info.</p>
               </div>
+              <div className="footer-links">
+                <h5>Quick Links</h5>
+                <ul>
+                  <li><a href="#home">Home</a></li>
+                  <li><a href="#services">Services</a></li>
+                  <li><a href="#doctors">Doctors</a></li>
+                  <li><a href="#faqs">FAQs</a></li>
+                </ul>
+              </div>
+              <div className="footer-contact">
+                <h5>Contact Us</h5>
+                <p>Helpline: +1 (234) 567-890</p>
+                <p>Address: CareVoice Medical Complex, Phase 6 DHA, Karachi</p>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+              <p>Powered by Advanced Agentic AI</p>
             </div>
           </div>
-        ) : null}
-      </section>
-    </main>
+        </footer>
+      )}
+    </div>
   );
 }
 
@@ -1292,6 +1516,35 @@ function TableNotifications({ rows, onDelete }) {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function FaqAccordionItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="faq-accordion-item">
+      <button
+        type="button"
+        className="faq-question-btn"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{question}</span>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {isOpen && <div className="faq-answer-panel">{answer}</div>}
     </div>
   );
 }
