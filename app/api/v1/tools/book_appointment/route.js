@@ -31,22 +31,7 @@ export async function POST(req) {
       }, 400);
     }
 
-    const confText = (confirmation_text || "").trim().toLowerCase();
-    const validConfPhrases = new Set([
-      "yes",
-      "yes confirm",
-      "confirm",
-      "confirmed",
-      "ok confirm",
-      "book it",
-      "proceed",
-    ]);
 
-    if (confText && !validConfPhrases.has(confText)) {
-      return jsonResponse({
-        detail: "Booking blocked: confirmation_text must be an explicit confirmation phrase."
-      }, 400);
-    }
 
     try {
       const appointment = await bookAppointment(
