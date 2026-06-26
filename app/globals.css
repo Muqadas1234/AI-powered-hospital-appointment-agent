@@ -1311,10 +1311,32 @@ button.btn-cancel-appt:hover {
 /* Doctors showcase */
 .docs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(4, 240px);
+  justify-content: center;
   gap: 24px;
   margin-bottom: 56px;
 }
+
+@media (max-width: 1080px) {
+  .docs-grid {
+    grid-template-columns: repeat(3, 240px);
+  }
+}
+
+@media (max-width: 900px) {
+  .docs-grid {
+    grid-template-columns: repeat(2, 240px);
+  }
+}
+
+@media (max-width: 600px) {
+  .docs-grid {
+    grid-template-columns: repeat(1, 240px);
+  }
+}
+
+
+
 
 .doc-landing-card {
   background: #ffffff;

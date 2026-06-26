@@ -86,6 +86,8 @@ export default function App() {
   const [cancelReason, setCancelReason] = useState(
     "Emergency — doctor unavailable. You may book another time through our assistant helpline.",
   );
+  const [visibleDoctors, setVisibleDoctors] = useState(12);
+
 
   const endpoint = useMemo(() => `${apiBase}/api/v1/admin`, [apiBase]);
 
@@ -781,7 +783,7 @@ export default function App() {
                 </div>
                 <div className="docs-grid">
                   {providers.length > 0 ? (
-                    providers.map((doc) => (
+                    providers.slice(0, visibleDoctors).map((doc) => (
                       <div key={doc.id} className="doc-landing-card">
                         <div className="doc-avatar-box">
                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -800,7 +802,15 @@ export default function App() {
                     <p style={{ textAlign: "center", gridColumn: "1 / -1", color: "var(--text-soft)" }}>No doctors configured currently. Switch to admin to add doctors.</p>
                   )}
                 </div>
+                {providers.length > visibleDoctors && (
+                  <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
+                    <button type="button" className="btn-secondary" onClick={() => setVisibleDoctors((prev) => prev + 12)}>
+                      See More
+                    </button>
+                  </div>
+                )}
               </section>
+
 
               {/* FAQs Section */}
               <section id="faqs" className="faqs-landing-section">
